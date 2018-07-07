@@ -145,11 +145,12 @@ copy_config() {
   cp ../cover/start.sh ./Tango/start.sh
   cp ../cover/Dockerfile ./Autolab/Dockerfile
   cp ../cover/Dockerfile.tango ./Tango/Dockerfile
+
   cp ../cover/autolab.rake ./Autolab/lib/tasks/autolab.rake
 
   if [ "$OPTION" == "local" ]
     then
-      cp ../cover/autograde.rb ./Autolab/app/controllers/assessment/autograde.rb
+      cp ../cover/assessment_autograde_core.rb ./Autolab/app/helpers/
   fi
 
   #User customize
@@ -159,6 +160,9 @@ copy_config() {
   cp ./configs/nginx.conf ./Autolab/docker/nginx.conf
   cp ./configs/production.rb ./Autolab/config/environments/production.rb
   cp ./Autolab/config/school.yml.template ./Autolab/config/school.yml
+
+  cp -r ../AnacondaDocker/* ./Tango/vmms/
+  
 
   log "[3/6] Done"
 }
@@ -177,7 +181,7 @@ make_volumes() {
 init_docker() {
   log "[5/6] Init docker images and containers..."
 
-  docker-compose up -d
+  docker-compose up &
   sleep 10
   log "[5/6] Done"
 }

@@ -5,7 +5,7 @@ namespace :autolab do
   USER_COUNT = 50
   ASSESSMENT_CATEGORIES = ["Homework", "Lab", "Quiz"]
   ASSESSMENT_COUNT = 6
-  PROBLEM_COUNT = 3
+  PROBLEM_COUNT = 3 
   SUBMISSION_MAX = 3
   PROBLEM_MAX_SCORE = 100.0
   COURSE_START = Time.now - 80.days
@@ -13,9 +13,9 @@ namespace :autolab do
 
   AUTOGRADE_CATEGORY_NAME = "CategoryAutograde"
   AUTOGRADE_TEMPLATE_DIR_PATH =
-          File.join(Rails.root, "templates", "labtemplate")
+          Rails.root.join("templates", "labtemplate")
   AUTOGRADE_TEMPLATE_CONFIG_PATH =
-          File.join(Rails.root, "templates", "AutoPopulated-labtemplate.rb")
+          Rails.root.join("templates", "AutoPopulated-labtemplate.rb")
   AUTOGRADE_TEMPLATE_NAME = "labtemplate"
   AUTOGRADE_TEMPLATE_DISPLAY_NAME = "Lab Template"
   AUTOGRADE_TEMPLATE_MAX_SCORE = 100.0
@@ -28,7 +28,7 @@ namespace :autolab do
       c.name = name
       c.semester = "SEM"
       c.late_slack = 0
-      c.grace_days = 3
+      c.grace_days = 3 
       c.late_penalty = Penalty.new(:value => 5, :kind => "points")
       c.version_penalty = Penalty.new(:value => 5, :kind => "points")
       c.display_name = name
@@ -38,7 +38,7 @@ namespace :autolab do
   end
 
   def load_assessments course
-    course_dir = File.join(Rails.root, "courses", course.name)
+    course_dir = Rails.root.join("courses", course.name)
     ASSESSMENT_CATEGORIES.each do |cat|
 
       # start date for this category
@@ -47,12 +47,12 @@ namespace :autolab do
       ASSESSMENT_COUNT.times do |i|
         course.assessments.create do |a|
           a.category_name = cat
-
-          a.visible_at = start
+          
+          a.visible_at = start 
           a.start_at = start
           a.due_at = start + (5 + rand(11)).days          # 5-15d after start date
           a.end_at = a.due_at + (1 + rand(7)).day   # 1d-1w after the due date
-          a.grading_deadline = a.end_at + (1 + rand(7)).day   # 1-7d after submit deadline
+          a.grading_deadline = a.end_at + (1 + rand(7)).day   # 1-7d after submit deadline 
 
           a.name = "#{cat}#{i.to_s}".downcase
           a.display_name = "#{cat} #{i.to_s}"
@@ -60,14 +60,17 @@ namespace :autolab do
           a.handin_filename = "handin.c"
           a.course_id = course.id
 
-          assessment_dir = File.join(course_dir, a.name)
-          assessment_handin_dir = File.join(assessment_dir, a.handin_directory)
-          FileUtils.mkdir_p(assessment_handin_dir)
+          a.construct_folder
 
           # 1-5 day buffer between assessments (in this category)
           start = a.due_at + (1 + rand(5)).day
         end
       end
+    end
+
+    # load config files for each assessment now that they've been created
+    course.assessments.each do |a|
+      a.load_config_file
     end
   end
 
@@ -83,7 +86,7 @@ namespace :autolab do
   end
 
   def load_users course
-
+    
     if User.where(:email => "admin@foo.bar").first then
       @grader = User.where(:email => "admin@foo.bar").first
     else
@@ -110,6 +113,7 @@ namespace :autolab do
 
       :lecture => "1",
       :section => "Instructor",
+      :dropped => false,
 
       :instructor => true,
       :course_assistant => true,
@@ -118,7 +122,7 @@ namespace :autolab do
     })
 
     i = 0
-    User.populate(USER_COUNT, :per_query => 10000) do |u|
+    User.populate(USER_COUNT, :per_query => 10000) do |u| 
       u.attributes = @default_user
 
       u.first_name = "User"
@@ -135,6 +139,7 @@ namespace :autolab do
 
         cud.lecture = "1"
         cud.section = "None"
+        cud.dropped = false
 
         cud.instructor = false
         cud.course_assistant = false
@@ -173,7 +178,7 @@ namespace :autolab do
   end
 
   def load_submissions_for(course, cud)
-    course_dir = File.join(Rails.root, "courses", course.name)
+    course_dir = Rails.root.join("courses", course.name)
     user = cud.user
 
     course.assessments.each do |a|
@@ -228,12 +233,12 @@ namespace :autolab do
   end
 
   def add_assessment_files course
-    course_dir = File.join Rails.root, "courses", course.name
+    course_dir = Rails.root.join("courses", course.name)
 
     course.assessments.each do |a|
       assessment_dir = File.join(course_dir, a.name)
       assessment_handin_dir = File.join(assessment_dir, a.handin_directory)
-      assessment_template_path = File.join(Rails.root, "lib", "__defaultAssessment.rb")
+      assessment_template_path = Rails.root.join("lib", "__defaultAssessment.rb")
       assessment_template = nil
 
       File.open(assessment_template_path) do |f|
@@ -262,12 +267,12 @@ namespace :autolab do
 
   def load_autograde_assessment course
 
-    course_dir = File.join(Rails.root, "courses", course.name)
+    course_dir = Rails.root.join("courses", course.name)
 
     # Create assessment
     asmt = course.assessments.create! do |a|
       a.category_name = AUTOGRADE_CATEGORY_NAME
-
+      
       a.visible_at = COURSE_START
       a.start_at = COURSE_START
       a.due_at = COURSE_START + (5 + rand(11)).days
@@ -286,7 +291,7 @@ namespace :autolab do
     # Load autograding properties
     Autograder.create! do |autograder|
       autograder.assessment_id = asmt.id
-      autograder.autograde_image = "rhel.img"
+      autograder.autograde_image = "autograding_image"
       autograder.autograde_timeout = 180
       autograder.release_score = true
     end
@@ -299,7 +304,7 @@ namespace :autolab do
     FileUtils.cp_r(AUTOGRADE_TEMPLATE_DIR_PATH, course_dir)
 
     # Copy assessment config
-    assessmentConfig_dir = File.join(Rails.root, "assessmentConfig")
+    assessmentConfig_dir = Rails.root.join("assessmentConfig")
     FileUtils.cp(AUTOGRADE_TEMPLATE_CONFIG_PATH, assessmentConfig_dir)
 
     # Reload config file
@@ -307,8 +312,8 @@ namespace :autolab do
   end
 
   task :populate, [:name] => :environment do |t, args|
-    require "populator"
-
+    require "populator" 
+  
     args.with_defaults(:name => COURSE_NAME)
     #abort("Only use this task in development or test.") unless ["development", "test"].include? Rails.env
     # If course exists, in `dev` aborts; in `test` overwrites.
@@ -330,7 +335,7 @@ namespace :autolab do
     @default_score = Score.new.attributes.delete_if &unwanted
     @default_user = User.new.attributes.delete_if &unwanted
 
-    puts "Creating Course #{args.name} and config file"
+    puts "Creating Course #{args.name} and config file" 
     course = load_course args.name
 
     puts "Creating Assessments"
@@ -361,8 +366,8 @@ namespace :autolab do
 
   def delete_course course
     if course
-      course_dir = File.join(Rails.root, "courses", course.name)
-      course_config_dir = File.join(Rails.root, "courseConfig")
+      course_dir = Rails.root.join("courses", course.name)
+      course_config_dir = Rails.root.join("courseConfig")
       course_config_path = File.join(course_config_dir, "#{course.name}.rb")
 
       course.destroy
@@ -393,3 +398,4 @@ namespace :autolab do
     end
   end
 end
+
