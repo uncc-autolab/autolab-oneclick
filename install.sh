@@ -181,7 +181,7 @@ make_volumes() {
 init_docker() {
   log "[5/6] Init docker images and containers..."
 
-  docker-compose up &
+  docker-compose up -d
   sleep 10
   log "[5/6] Done"
 }
