@@ -1,1 +1,6 @@
 easydict
+opencv-python
+tensorflow
+keras
+tqdm
+wget
