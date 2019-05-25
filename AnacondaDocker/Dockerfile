@@ -1,6 +1,6 @@
 # Autolab - autograding docker image
 
-FROM continuumio/anaconda3
+FROM continuumio/anaconda3:5.2.0
 MAINTAINER Archit Parnami
 
 RUN apt-get update --fix-missing
