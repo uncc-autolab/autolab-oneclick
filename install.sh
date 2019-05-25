@@ -134,8 +134,8 @@ environment_setup() {
 
 source_file_download() {
   log "[2/6] Downloading source file..."
-  git clone https://github.com/autolab/Tango.git
-  git clone https://github.com/autolab/Autolab
+  git clone https://github.com/CodeCrawl/Tango.git
+  git clone https://github.com/autolab/Autolab.git --branch v2.2.1 --single-branch
   log "[2/6] Done"
 }
 
