@@ -1,6 +1,6 @@
 # Autolab - autograding docker image
 
-FROM continuumio/anaconda3:5.2.0
+FROM continuumio/miniconda3
 MAINTAINER Archit Parnami
 
 RUN apt-get update --fix-missing
@@ -15,7 +15,11 @@ RUN apt-get -y install vim
 WORKDIR /app
 ADD requirements.txt /app
 ADD Test /app
-RUN pip install --trusted-host pypi.python.org -r requirements.txt
+
+RUN conda create -n unccv python=3.6
+RUN echo "source activate unccv" > ~/.bashrc
+ENV PATH /opt/conda/envs/unccv/bin:$PATH
+RUN pip install --upgrade pip --trusted-host pypi.python.org -r requirements.txt
 
 # Install autodriver
 WORKDIR /home
