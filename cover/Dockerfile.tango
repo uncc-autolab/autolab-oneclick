@@ -12,7 +12,7 @@ WORKDIR /opt
 # Move all code into Tango directory
 ADD . TangoService/Tango/
 WORKDIR /opt/TangoService/Tango
-RUN mkdir volumes
+RUN mkdir -p volumes
 RUN mkdir -p courselabs output
 
 WORKDIR /opt
