@@ -55,7 +55,7 @@ RUN chmod +x /usr/local/bin/wrapdocker
 VOLUME /var/lib/docker
 
 # Create virtualenv to link dependancies
-RUN pip install virtualenv && virtualenv .
+RUN pip install virtualenv==16.7.4 && virtualenv .
 # Install python dependancies
 RUN pip install -r requirements.txt
 
