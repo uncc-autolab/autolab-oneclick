@@ -14,6 +14,11 @@ tango:
   ports:
     - '8600:8600'
   privileged: true
+  volumes: 
+  - ./Tango/config.py:/opt/TangoService/Tango/config.py
+  - ./Tango/start.sh:/opt/TangoService/Tango/start.sh
+  - ./Tango/vmms/ITCS-5152:/opt/TangoService/Tango/vmms/ITCS-5152
+  - ./Tango/vmms/ITCS-4156:/opt/TangoService/Tango/vmms/ITCS-4156
 
 
 web:
