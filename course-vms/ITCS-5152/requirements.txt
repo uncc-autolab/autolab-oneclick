@@ -1,0 +1,11 @@
+easydict
+opencv-python
+tensorflow
+keras
+tqdm
+wget
+pillow
+matplotlib
+torch
+fastai
+pathlib
