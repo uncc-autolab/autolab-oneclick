@@ -134,8 +134,8 @@ environment_setup() {
 
 source_file_download() {
   log "[2/6] Downloading source file..."
-  git clone https://github.com/CodeCrawl/Tango.git
-  git clone https://github.com/autolab/Autolab.git --branch v2.2.1 --single-branch
+  git clone https://github.com/uncc-autolab/Tango.git
+  git clone https://github.com/uncc-autolab/Autolab.git
   log "[2/6] Done"
 }
 
@@ -161,7 +161,7 @@ copy_config() {
   cp ./configs/production.rb ./Autolab/config/environments/production.rb
   cp ./Autolab/config/school.yml.template ./Autolab/config/school.yml
 
-  cp -r ../AnacondaDocker/* ./Tango/vmms/
+  cp -r ../course-vms/* ./Tango/vmms/
   
 
   log "[3/6] Done"
